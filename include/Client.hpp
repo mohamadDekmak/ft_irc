@@ -1,7 +1,7 @@
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-// Shared interface: agree on client state and buffers before implementation.
+// Represents one connected client. We will add its data later.
 class Client
 {
 };

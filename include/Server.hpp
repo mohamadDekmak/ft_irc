@@ -3,8 +3,8 @@
 
 #include "IrcContract.hpp"
 
-// Owner A: TCP sockets, poll, per-client buffers and lifecycle.
-// Interface declarations only; networking implementation comes in C1-C5.
+// Networking class: handles connections and sending/receiving messages.
+// The functions will be implemented later.
 class Server : public ITransport
 {
 public:

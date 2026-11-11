@@ -1,3 +1,3 @@
 #include "Client.hpp"
 
-// TODO: client state and I/O buffers (C2-C4).
+// TODO: Add client information and message buffers.

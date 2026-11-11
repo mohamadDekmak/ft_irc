@@ -1,3 +1,3 @@
 #include "CommandHandler.hpp"
 
-// TODO: IRC parsing and command dispatch.
+// TODO: Add code to understand and handle IRC commands.

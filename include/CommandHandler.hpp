@@ -3,8 +3,8 @@
 
 #include "IrcContract.hpp"
 
-// Owner B: parser, registration, nicknames, messages, channels and modes.
-// Interface declarations only; command implementation comes in P1/R/M/CH.
+// IRC Logic class: understands commands and manages users and channels.
+// The functions will be implemented later.
 class CommandHandler : public IIrcSession
 {
 public:

@@ -1,3 +1,3 @@
 #include "Channel.hpp"
 
-// TODO: channel logic.
+// TODO: Add channel members, topic and permissions.

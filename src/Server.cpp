@@ -1,3 +1,3 @@
 #include "Server.hpp"
 
-// TODO: TCP server implementation (C1-C3).
+// TODO: Add the code that accepts clients and sends/receives messages.

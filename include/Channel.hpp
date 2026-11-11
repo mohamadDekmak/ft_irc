@@ -1,7 +1,7 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-// TODO: implement channel membership, permissions, topic and modes.
+// Represents an IRC channel. Members, topic and permissions will be added later.
 class Channel
 {
 };
