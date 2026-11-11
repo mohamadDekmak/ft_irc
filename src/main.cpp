@@ -1,7 +1,7 @@
+#include "Server.hpp"
 #include <iostream>
 #include <cstdlib>
 #include <cerrno>
-#include <climits>
 
 int main(int argc, char **argv)
 {
@@ -28,7 +28,15 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    // Server startup will be added in C1.
-    std::cout << "Valid port: " << port << std::endl;
+    Server server(static_cast<int>(port), argv[2]);
+    if (!server.createSocket() || !server.bindSocket()
+        || !server.listenSocket())
+        return 1;
+
+    std::cout << "Listening on port " << port << std::endl;
+
+    // Temporary startup test. C2-C3 will add the event loop.
+    std::cout << "Press Enter to stop the server." << std::endl;
+    std::cin.get();
     return 0;
 }
