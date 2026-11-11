@@ -16,6 +16,7 @@ public:
     virtual ~Server();
 
     bool createSocket();
+    bool bindSocket();
 
     virtual bool queueReply(ClientId id, const std::string& line);
     virtual void requestDisconnect(ClientId id);
