@@ -2,13 +2,21 @@
 #define SERVER_HPP
 
 #include "IrcContract.hpp"
+#include <string>
 
-// Owner A: TCP sockets, poll, per-client buffers and lifecycle.
-// Interface declarations only; networking implementation comes in C1-C5.
 class Server : public ITransport
 {
+private:
+    int _port;
+    std::string _password;
+    int _serverFd;
+
 public:
-    virtual ~Server() {}
+    Server(int port, const std::string& password);
+    virtual ~Server();
+
+    bool createSocket();
+
     virtual bool queueReply(ClientId id, const std::string& line);
     virtual void requestDisconnect(ClientId id);
 };
