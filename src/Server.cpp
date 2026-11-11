@@ -47,6 +47,19 @@ bool Server::bindSocket()
     return true;
 }
 
+bool Server::listenSocket()
+{
+    if (_serverFd == -1)
+        return false;
+
+    if (listen(_serverFd, SOMAXCONN) == -1)
+    {
+        std::cerr << "Error: listen failed" << std::endl;
+        return false;
+    }
+    return true;
+}
+
 // Implemented when client management is added in C2-C4.
 bool Server::queueReply(ClientId id, const std::string& line)
 {
