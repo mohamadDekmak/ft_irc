@@ -37,42 +37,40 @@ void onClientDisconnected(ClientId id);
 7. **R5 + CH7:** Full lifecycle, registration errors, nickname changes, disconnect cleanup, and end-to-end tests.
 8. **QA1 + QA2:** Validate with a real IRC client, C++98 compile, malformed input, protocol interoperability and subject compliance. Coordinate PING/PONG, QUIT and any client-required compatibility behavior; do not assume a real client only sends mandatory commands.
 
-## How to start today without Owner A
+## Test your real logic without Owner A
 
-Create a **FakeTransport** in `tests/` implementing `ITransport`, capturing replies into memory:
+The repository already contains a fake networking driver at `tests/fake_connection.cpp`. It calls the **real** `CommandHandler`, not a demo session. You do not need to write your own fake connection.
 
-```cpp
-#include "IrcContract.hpp"
-#include <map>
-#include <string>
-#include <vector>
+Run from the repository root:
 
-class FakeTransport : public ITransport {
-public:
-    std::map<ClientId, std::vector<std::string> > replies;
-    virtual bool queueReply(ClientId id, const std::string& line) {
-        replies[id].push_back(line);
-        return true;
-    }
-    virtual void requestDisconnect(ClientId id) { (void)id; }
-};
+```sh
+c++ -Wall -Wextra -Werror -std=c++98 -Iinclude tests/fake_connection.cpp src/CommandHandler.cpp -o fake_irc_test
+./fake_irc_test
 ```
 
-Construct the real `CommandHandler` with this fake transport (constructor dependency injection to be agreed jointly). Then test by calling the interface directly:
+If your logic adds other source files (for example `src/Channel.cpp`), add them to the compile command.
 
-```cpp
-handler.onClientConnected(1);
-handler.onClientConnected(2);
-handler.onCommand(1, "PASS secret123");
-handler.onCommand(1, "NICK ali");
-handler.onCommand(1, "USER ali 0 * :Ali");
-handler.onCommand(2, "PASS secret123");
-handler.onCommand(2, "NICK sara");
-handler.onCommand(2, "USER sara 0 * :Sara");
-handler.onCommand(1, "PRIVMSG sara :hello");
+Try these inputs:
+
+```text
+connect 1
+connect 2
+send 1 PASS secret123
+send 1 NICK ali
+send 1 USER ali 0 * :Ali
+send 2 PASS secret123
+send 2 NICK sara
+send 2 USER sara 0 * :Sara
+send 1 PRIVMSG sara :hello
+disconnect 1
+quit
 ```
 
-Assert the fake transport collected a correctly formatted PRIVMSG for ClientId 2. Next test JOIN, channel PRIVMSG, operator permissions, and error responses. **No TCP socket or running Server required.** FakeTransport is only for tests; the real Server later implements the same interface.
+The driver maps `connect` to `onClientConnected`, `send` to `onCommand`, and `disconnect` to `onClientDisconnected`. The fake `queueReply` prints `[reply to ID] ...`. A `requestDisconnect` made during a command is handled by the driver after the callback, with one disconnect notification.
+
+**Important:** `CommandHandler.cpp` currently has TODO callbacks and does not implement PASS/NICK/USER/JOIN or other IRC behavior. Initially you will see connection/command logs but no real replies. Implement the behavior in `CommandHandler`; the same test driver then exercises your new code without changes. The constructor already takes `ITransport&`, stored as `_transport`. Use `_transport.queueReply(id, logicalLine)` and `_transport.requestDisconnect(id)`.
+
+This test is for IRC logic, not TCP, poll, framing or partial writes. `send` supplies one complete logical line without CRLF. Keep fake code out of the production server. The test driver does not automatically enforce IRC correctness; add assertions for replies and state as logic grows.
 
 ## Integration handoff to Owner A
 
@@ -81,7 +79,7 @@ Show that `onCommand` handles complete IRC lines, `queueReply` contains correct 
 ## Joint decisions / do not silently change
 
 - Where IRC session state lives: prefer an IRC-owned session map keyed by ClientId, with Client transport state owned by Networking.
-- How CommandHandler receives `ITransport&` and server password.
+- `CommandHandler` receives `ITransport&` through its constructor; agree how to pass and validate the server password before implementing PASS.
 - Output failure policy, disconnect timing, line size and buffer limits.
 - Shared `Client.hpp` ownership; any contract change needs both owners' approval.
 - Real IRC client expectations, registration welcome replies, PING/PONG and QUIT handling.
