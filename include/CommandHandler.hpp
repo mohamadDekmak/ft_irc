@@ -3,11 +3,14 @@
 
 #include "IrcContract.hpp"
 
-// Owner B: parser, registration, nicknames, messages, channels and modes.
-// Interface declarations only; command implementation comes in P1/R/M/CH.
+// Owner B implements IRC behavior here. Networking is accessed via ITransport.
 class CommandHandler : public IIrcSession
 {
+private:
+    ITransport& _transport;
+
 public:
+    explicit CommandHandler(ITransport& transport);
     virtual ~CommandHandler() {}
     virtual void onClientConnected(ClientId id);
     virtual void onCommand(ClientId id, const std::string& line);
