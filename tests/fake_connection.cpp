@@ -39,7 +39,7 @@ public:
 int main()
 {
     FakeTransport transport;
-    CommandHandler session(transport);
+    CommandHandler session(transport, "secret123");
     std::set<ClientId> active;
     std::string input;
 
